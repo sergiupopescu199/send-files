@@ -59,16 +59,16 @@ cordova build && codrova run
 
 Some images of the cordova app
 
-![Screenshot_20200622_161712](../send-files/docs/Screenshot_20200622_161712.png)
+![Screenshot_20200622_161712](./docs/Screenshot_20200622_161712.png)
 
 
 
-![Screenshot_20200622_162102](../send-files/docs/Screenshot_20200622_162102.png)
+![Screenshot_20200622_162102](./docs/Screenshot_20200622_162102.png)
 
 The output of the server
 
-![Screenshot_20200622_162112](../send-files/docs/Screenshot_20200622_162112.png)
+![Screenshot_20200622_162112](./docs/Screenshot_20200622_162112.png)
 
 The files received from the cordova app in th e`uploads` folder
 
-![Screenshot_20200622_162116](../send-files/docs/Screenshot_20200622_162116.png)
+![Screenshot_20200622_162116](./docs/Screenshot_20200622_162116.png)
