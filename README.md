@@ -59,7 +59,7 @@ cordova build && codrova run
 
 Some images of the cordova app
 
-![Screenshot_20200622_161712](./docs/Screenshot_20200622_161712.png)
+<img src="./docs/Screenshot_20200622_161712.png" alt="Screenshot_20200622_161712" style="align:center;" />
 
 
 
