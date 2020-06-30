@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Files</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body>
+    <form id='file-catcher'>
+        <input id='file-input' type='file' multiple />
+        <button id="upload" type='submit'>Upload</button>
+    </form>
+
+    <button id="remove" class="right" type="submit" onclick="removeAll()">Remove</button>
+    <div id='file-list-display'>No files selected</div>
+    <script>
+        // API server url for uploading files
+        URL_API_SERVER_UPLOAD = 'http://192.168.1.117:3000/upload';
+        // API server url for removing all the files
+        URL_API_SERVER_REMOVE = 'http://192.168.1.117:3000/remove';
+        // Form tag
+        var fileCatcher = document.getElementById('file-catcher');
+        // Input button
+        var fileInput = document.getElementById('file-input');
+        // Enpty div
+        var fileListDisplay = document.getElementById('file-list-display');
+
+
+        // Create an enpty array for holding the file/s
+        var fileList = [];
+        var renderFileList, sendFile, index;
+
+        // We attach an event listener for the form’s "submit" event. 
+        // Thereafter we prevent the form from actually submitting using the event’s 
+        // preventDefault() method. Finally we iterate over the cached fileList array 
+        // and send each file to the sendFile method
+        fileCatcher.addEventListener('submit', function (evnt) {
+            // The preventDefault() method cancels the event if 
+            // it is cancelable, meaning that the default action 
+            // that belongs to the event will not occur. 
+            // Clicking on a "Submit" button, prevent it from submitting a form
+            evnt.preventDefault();
+            // We'll use this variable to manage and notify to the user the number of data
+            // uploaded to the server
+            index = 0;
+            // Iterate trough all the files choosen by the user
+            fileList.forEach(function (file) {
+                // Sends the file one by one and not in once chunk
+                // By splitting the files into separate requests, this strategy allows for a 
+                // file upload to fail in isolation. In other words, if the connection fails for 
+                // the request, or the file is invalidated by the server, or any other reason, that file 
+                // upload will fail by itself and should not necessarily affect any of the other uploads.
+                fileListDisplay.innerHTML = "Please wait..";
+                sendFile(file);
+            });
+        });
+
+        // We need to watch the file input for any changes. When we detect 
+        // a change we then cache the file pointers in an array to be used 
+        // when the form is submitted.
+        fileInput.addEventListener('change', function (evnt) {
+            // fileList array is reset inside the change handler. 
+            // This is in case the user selects files more than once. 
+            fileList = [];
+            // Iterate trough all the files selected by the input button
+            for (let i = 0; i < fileInput.files.length; i++) {
+                fileList.push(fileInput.files[i]);
+            }
+            // Render (print) files to the screen
+            renderFileList();
+        });
+
+        // We would like to see on screen all the files selected by the input button
+        renderFileList = function () {
+            fileListDisplay.innerHTML = fileList.length + ' Files selected';
+            // Iterate trough all the files selected
+            fileList.forEach(function (file, index) {
+                // Each element is stored in an <p> tag
+                let fileDisplayEl = document.createElement('p');
+                // Start indexing files from 1 not 0
+                fileDisplayEl.innerHTML = (index + 1) + ': ' + file.name;
+                // Display all elements to the screen
+                fileListDisplay.appendChild(fileDisplayEl);
+            });
+        };
+
+        // We’ve cached the files after the user has selected them. 
+        // We’ve intercepted, and prevented, the form submission and piped the files 
+        // through to the sendFile method. All we have to do now is actually write the 
+        // sendFile method to accept the files and send them off to the server.
+        sendFile = function (file) {
+            // The FormData object lets you compile a set of key/value pairs to send using XMLHttpRequest.
+            // It is primarily intended for use in sending form data, but can be used independently from 
+            // forms in order to transmit keyed data. The transmitted data is in the same format that the form's 
+            // submit() method would use to send the data if the form's encoding type were set to multipart/form-data.
+            let formData = new FormData();
+            // Opens a connection to the server, and sends the formData instance
+            let request = new XMLHttpRequest();
+            // The set() method of the FormData interface sets a new value for an existing key inside a 
+            // FormData object, or adds the key/value if it does not already exist.
+            // The difference between set() and FormData.append is that if the specified key does already exist, 
+            // set() will overwrite all existing values with the new one, whereas FormData.append will append 
+            // the new value onto the end of the existing set of values.
+            formData.set('file', file);
+            request.open("POST", URL_API_SERVER_UPLOAD);
+            request.onreadystatechange = () => {
+                // request.readyState = 4 means that the state the request is DONE:
+                // The fetch operation is complete. This could mean that either 
+                // the data transfer has been completed successfully or failed.
+                if (request.readyState === 4 && request.status === 200) {
+                    index++;
+                    // Response from the API server
+                    // Get the raw response
+                    let rawData = request.responseText;
+                    // Parse the raw response and parse it to an javascript obj
+                    let jsonFormat = JSON.parse(rawData)
+                    // Creating a <p> tag to handle the new data
+                    let fileDisplayEl = document.createElement('p');
+                    // In the file-list-display id we will display to the user the filename uploaded 
+                    fileDisplayEl.innerHTML = file.name + ' - Uploaded!';
+                    // And here we eill display to the user the number of files uploaded to the server
+                    fileListDisplay.innerHTML = index + ' of ' + fileList.length;
+                    // Display all elements to the screen
+                    fileListDisplay.appendChild(fileDisplayEl);
+                    // this console.log() are good for debugging
+                    //  console.log(jsonFormat);
+                    //  console.log(index);
+                    //  console.log(fileList.length);
+
+                    // If all files are uploaded the div tag is updated
+                    if (index === fileList.length) {
+                        fileListDisplay.innerHTML = "All files are uploaded";
+                    }
+                    // If the internet connection or the connection to the server is lost
+                    // pressing the button will let us know 
+                } else if (request.status != 200) {
+                    fileListDisplay.innerHTML = "Connection lost, try again";
+                }
+            };
+
+            // Sending the file inside the formData to the server
+            request.send(formData);
+        };
+
+        // After uploading all the data to the server now we want to delete all the data from it
+        removeAll = function () {
+            // we  create a gain a POST request to the server
+            let request = new XMLHttpRequest();
+            request.open("POST", URL_API_SERVER_REMOVE);
+            request.onreadystatechange = () => {
+                // If the request has state DONE 
+                if (request.readyState === 4 && request.status === 200) {
+                    // Get the raw response
+                    let rawData = request.responseText;
+                    // Parse the raw response and parse it to an javascript obj
+                    let jsonFormat = JSON.parse(rawData)
+                    fileListDisplay.innerHTML = '';
+                    // getting the response from the server
+                    fileListDisplay.innerHTML = jsonFormat.message;
+                    console.log(jsonFormat.message);
+                    // If the internet connection or the connection to the server is lost
+                    // pressing the button will let us know 
+                } else if (request.status != 200) {
+                    fileListDisplay.innerHTML = "Connection lost, try again";
+                }
+            };
+            // sending the request to the server
+            request.send();
+        }
+    </script>
+</body>
+
+</html>
