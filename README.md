@@ -63,7 +63,7 @@ Some images of the cordova app
 </p>
 
 <p align="center">
-    <img src="./docs/./docs/Screenshot_20200622_162102.png" alt="Screenshot_20200622_162102"" />
+    <img src="./docs/Screenshot_20200622_162102.png" alt="Screenshot_20200622_162102"" />
 </p>
 
 The output of the server
