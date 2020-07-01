@@ -54,7 +54,7 @@ rm -rv www/ config.xml
 cp -r -t ./ ../client/www/ ../client/config.xml
 # build and run the cordova app in your phone, make sure to have 
 # the phone connected trough USB cable on your pc
-cordova build && codrova run
+cordova build && cordova run
 ```
 
 Some images of the cordova app
