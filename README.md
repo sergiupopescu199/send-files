@@ -59,11 +59,11 @@ cordova build && codrova run
 
 Some images of the cordova app
 <p align="center">
-    ![Screenshot_20200622_161712](./docs/Screenshot_20200622_161712.png)
+   <img src="./docs/Screenshot_20200622_161712.png" alt="Screenshot_20200622_161712"" />
 </p>
 
 <p align="center">
-    ![Screenshot_20200622_162102](./docs/Screenshot_20200622_162102.png)
+    <img src="./docs/./docs/Screenshot_20200622_162102.png" alt="Screenshot_20200622_162102"" />
 </p>
 
 The output of the server
