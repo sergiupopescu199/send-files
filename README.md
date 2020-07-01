@@ -14,7 +14,7 @@ yarn
 # first discover the IP address of your pc
 ifconfig
 # or use ip address show 
-# for example your pc have 192.168.1.117 IP address
+# for example my pc have 192.168.1.117 IP address
 # now start the server.js script
 node server.js
 # the script will automaticly create the uploads folder
